@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Lokeshwari</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFF7F4;
+    --bg2: #FDEAE8;
+    --card: #FFFDFC;
+    --rose: #E9AEBB;
+    --rose-deep: #D98A9C;
+    --deep: #6B3F4B;
+    --ink: #4A2E38;
+    --gold: #CBA06A;
+    --ember: #D97D6D;
+    --line: rgba(107,63,75,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(38% 30% at 12% 18%, rgba(233,174,187,0.55), transparent 70%),
+      radial-gradient(32% 26% at 88% 12%, rgba(203,160,106,0.30), transparent 70%),
+      radial-gradient(45% 38% at 85% 78%, rgba(217,125,109,0.28), transparent 70%),
+      radial-gradient(40% 34% at 8% 85%, rgba(233,174,187,0.4), transparent 70%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+  h1,h2,h3, .display{ font-family:'Fraunces', serif; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  /* dreamy glowing bokeh lights, drifting slowly behind everything */
+  .bokeh{ position:fixed; border-radius:50%; filter: blur(2px); z-index:0; pointer-events:none;
+    animation: drift ease-in-out infinite alternate; opacity:.55; }
+  @keyframes drift{ from{ transform: translate(0,0) scale(1); } to{ transform: translate(24px,-30px) scale(1.08); } }
+
+  /* soft floating petals, background only */
+  .petal{ position:fixed; top:-40px; font-size: 18px; opacity:.55; z-index:1; animation: fall linear infinite; pointer-events:none;
+    filter: drop-shadow(0 2px 3px rgba(107,63,75,0.12)); }
+  @keyframes fall{ to{ transform: translateY(110vh) rotate(200deg); } }
+
+  /* ---------- LOCK SCREEN ---------- */
+  #lock{
+    position:fixed; inset:0; z-index:50;
+    display:flex; align-items:center; justify-content:center;
+    background:
+      radial-gradient(45% 40% at 20% 20%, rgba(233,174,187,0.5), transparent 70%),
+      radial-gradient(45% 40% at 85% 80%, rgba(217,125,109,0.3), transparent 70%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    transition: opacity .9s ease, visibility .9s ease;
+    padding: 24px;
+  }
+  #lock.unlocked{ opacity:0; visibility:hidden; pointer-events:none; }
+  .seal-card{
+    width:min(420px, 100%);
+    background: rgba(255,253,252,0.82);
+    backdrop-filter: blur(10px);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding: 40px 30px 32px;
+    text-align:center;
+    box-shadow: 0 24px 60px rgba(107,63,75,0.16);
+    position:relative; z-index:2;
+  }
+  .wax{
+    width:56px;height:56px;border-radius:50%;
+    margin: 0 auto 18px;
+    background: linear-gradient(135deg, var(--rose), var(--ember));
+    display:flex;align-items:center;justify-content:center;
+    font-size: 24px;
+  }
+  .seal-card .eyebrow{
+    text-transform:uppercase; letter-spacing:.18em; font-size:11px; color:var(--rose-deep); margin-bottom:8px;
+  }
+  .seal-card h1{ font-size: 26px; font-weight:600; margin: 0 0 6px; color:var(--deep); }
+  .seal-card p.sub{ font-size:14px; color: rgba(74,46,56,0.6); margin:0 0 26px; line-height:1.5;}
+  .code-row{ display:flex; gap:8px; justify-content:center; margin-bottom:10px; }
+  .code-row input{
+    width:40px; height:52px; text-align:center; font-size:20px; font-family:'Fraunces',serif;
+    background: var(--bg2); border:1px solid var(--line); border-radius:10px; color:var(--deep);
+    outline:none; transition: border-color .2s, transform .2s;
+  }
+  .code-row input:focus{ border-color: var(--rose-deep); transform: translateY(-2px); }
+  .hint{ font-size:12px; color: rgba(74,46,56,0.4); margin: 6px 0 22px; }
+  #unlockBtn{
+    width:100%; padding:13px; border:none; border-radius:999px; cursor:pointer;
+    background: linear-gradient(120deg, var(--rose), var(--ember));
+    color: #fff; font-weight:700; font-size:14px; letter-spacing:.03em;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  #unlockBtn:hover{ transform: translateY(-2px); box-shadow: 0 10px 24px rgba(217,125,109,0.28); }
+  #unlockBtn:active{ transform: translateY(0); }
+  .error-msg{ min-height:18px; font-size:12px; color: var(--ember); margin-top:10px; }
+  .shake{ animation: shake .4s; }
+  @keyframes shake{ 10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(4px)} 30%,50%,70%{transform:translateX(-8px)} 40%,60%{transform:translateX(8px)} }
+
+  /* ---------- MAIN PAGE ---------- */
+  #main{ max-width: 880px; margin: 0 auto; padding: 0 20px 100px; position:relative; z-index:2; }
+
+  .sound-toggle{
+    position:fixed; top:20px; right:20px; z-index:20;
+    background: var(--card); border:1px solid var(--line); color:var(--deep);
+    width:44px;height:44px;border-radius:50%; cursor:pointer; font-size:18px;
+    box-shadow: 0 6px 16px rgba(107,63,75,0.1);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .sound-toggle.muted{ color: var(--rose-deep); border-color: var(--rose); }
+
+  .music-note{
+    position:fixed; top:74px; right:20px; z-index:21; max-width:250px;
+    background: var(--card); border:1px solid var(--line); color:var(--deep);
+    font-size:12px; line-height:1.5; padding:10px 14px; border-radius:12px;
+    box-shadow: 0 6px 16px rgba(107,63,75,0.1); cursor:pointer;
+    opacity:0; visibility:hidden; transform:translateY(-6px);
+    transition: opacity .25s ease, transform .25s ease, visibility .25s;
+  }
+  .music-note.show{ opacity:1; visibility:visible; transform:none; }
+
+  .hero{ text-align:center; padding: 110px 0 70px; position:relative; }
+  .hero .eyebrow{ text-transform:uppercase; letter-spacing:.3em; font-size:12px; color:var(--rose-deep); margin-bottom: 18px; opacity:0; animation: rise 1s .2s forwards; }
+  .hero h1{ font-size: clamp(44px, 9vw, 84px); font-weight:600; line-height:1.05; margin:0 0 14px; opacity:0; animation: rise 1s .4s forwards, glow 3.5s ease-in-out 1.4s infinite; color: var(--deep); }
+  @keyframes glow{ 0%,100%{ text-shadow: 0 0 18px rgba(233,174,187,0); } 50%{ text-shadow: 0 0 26px rgba(233,174,187,0.55); } }
+  .hero p{ font-size:16px; color: rgba(74,46,56,0.65); max-width:460px; margin:0 auto; opacity:0; animation: rise 1s .6s forwards; }
+  @keyframes rise{ from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);} }
+
+  .candle-wrap{ margin-top:44px; opacity:0; animation: rise 1s .8s forwards; }
+  .candle{ display:inline-flex; flex-direction:column; align-items:center; cursor:pointer; user-select:none; }
+  .flame{ width:10px; height:22px; border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+    background: radial-gradient(circle at 50% 70%, #fff6c9, var(--gold) 55%, var(--ember) 100%);
+    margin-bottom:2px; animation: flick 1.4s ease-in-out infinite alternate; transform-origin: bottom center; }
+  @keyframes flick{ from{ transform: scale(1) rotate(-2deg);} to{ transform: scale(1.12) rotate(2deg);} }
+  .stick{ width:8px; height:46px; background: linear-gradient(var(--rose), var(--ember)); border-radius:3px; }
+  .candle-label{ font-size:12px; color:rgba(74,46,56,0.45); margin-top:10px; }
+  .candle.blown .flame{ opacity:0; }
+
+  section{ margin-top: 110px; }
+  .section-head{ text-align:center; margin-bottom: 42px; }
+  .section-head .eyebrow{ text-transform:uppercase; letter-spacing:.25em; font-size:11px; color:var(--rose-deep); margin-bottom:10px; }
+  .section-head h2{ font-size: clamp(28px,5vw,38px); margin:0; font-weight:500; color: var(--deep); }
+
+  /* ---------- TIMELINE SLIDESHOW ---------- */
+  .slideshow{ position:relative; }
+  .slide-viewport{ position:relative; height: 440px; border-radius:22px; overflow:hidden; border:1px solid var(--line);
+    box-shadow: 0 24px 60px rgba(107,63,75,0.18); background: rgba(255,253,252,0.85); backdrop-filter: blur(6px); }
+  .slide{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end;
+    opacity:0; transition: opacity 1s ease; }
+  .slide.active{ opacity:1; }
+  .slide-photo{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; }
+  .slide-photo svg{ width:54px; height:54px; opacity:.6; }
+  .slide-photo .ph-label{ font-size:12px; letter-spacing:.1em; text-transform:uppercase; color: rgba(74,46,56,0.55); }
+  .slide-caption{ position:relative; padding: 26px 26px 22px; background: linear-gradient(0deg, rgba(255,255,255,0.92), transparent); }
+  .slide-caption .year{ font-family:'Fraunces',serif; font-style:italic; font-size:14px; color:var(--rose-deep); display:block; margin-bottom:4px; }
+  .slide-caption p{ margin:0; font-size:15px; color: var(--deep); }
+  .dots{ display:flex; justify-content:center; gap:8px; margin-top:20px; }
+  .dot{ width:8px; height:8px; border-radius:50%; background: rgba(107,63,75,0.2); cursor:pointer; transition: all .3s; }
+  .dot.active{ background: var(--rose-deep); width:22px; border-radius:5px; }
+  .arrow{ position:absolute; top:50%; transform:translateY(-50%); width:38px; height:38px; border-radius:50%;
+    background: rgba(255,255,255,0.85); border:1px solid var(--line); color:var(--deep); cursor:pointer; font-size:16px; z-index:5; }
+  .arrow.left{ left:14px; } .arrow.right{ right:14px; }
+
+  /* ---------- EXPECTATION SECTION ---------- */
+  .wish-box{ max-width:520px; margin:0 auto; text-align:center; }
+  .wish-box textarea{
+    width:100%; min-height:90px; resize:vertical; padding:16px; border-radius:14px;
+    background: var(--card); border:1px solid var(--line); color:var(--ink);
+    font-family:'Manrope',sans-serif; font-size:14px; outline:none;
+  }
+  .wish-box textarea:focus{ border-color:var(--rose-deep); }
+  .wish-box button{
+    margin-top:16px; padding:13px 34px; border:none; border-radius:999px; cursor:pointer;
+    background: linear-gradient(120deg, var(--rose), var(--ember)); color: #fff;
+    font-weight:700; font-size:14px;
+  }
+  .reply{ margin-top:28px; padding:24px; border-radius:16px; background: var(--card);
+    border:1px solid var(--line); text-align:left; font-size:15px; line-height:1.7; display:none; }
+  .reply.show{ display:block; animation: rise .7s forwards; }
+  .reply .sig{ display:block; margin-top:14px; font-family:'Fraunces',serif; font-style:italic; color:var(--rose-deep); }
+
+  footer{ text-align:center; margin-top:120px; font-size:12px; color: rgba(74,46,56,0.4); }
+  footer .heart{ color:var(--ember); }
+
+  /* ---------- GIFT SECTION ---------- */
+  .gift-wrap{ display:flex; flex-direction:column; align-items:center; }
+  .gift-box{ position:relative; width:140px; height:110px; cursor:pointer; user-select:none; perspective:600px; }
+  .gift-base{ position:absolute; bottom:0; width:140px; height:80px; border-radius:8px;
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    box-shadow: 0 18px 40px rgba(107,63,75,0.22); }
+  .gift-lid{ position:absolute; top:22px; width:150px; left:-5px; height:26px; border-radius:6px;
+    background: linear-gradient(135deg, var(--rose-deep), var(--ember));
+    box-shadow: 0 8px 16px rgba(107,63,75,0.2);
+    transition: transform .6s cubic-bezier(.2,.9,.3,1.3), opacity .6s ease; transform-origin: bottom center; z-index:3; }
+  .ribbon-v{ position:absolute; top:0; left:50%; width:16px; height:80px; transform:translateX(-50%);
+    background: var(--gold); z-index:2; }
+  .ribbon-h{ position:absolute; top:22px; left:-5px; width:150px; height:16px;
+    background: var(--gold); z-index:4; }
+  .bow{ position:absolute; top:-6px; left:50%; transform:translateX(-50%); font-size:26px; z-index:5; }
+  .gift-box.open .gift-lid{ transform: translateY(-70px) rotate(-18deg); opacity:0; }
+  .gift-box.open .bow{ transform: translate(-50%,-70px) rotate(-18deg); opacity:0; transition: all .6s ease; }
+  .gift-hint{ margin-top:16px; font-size:12px; color: rgba(74,46,56,0.5); }
+  .gift-note{ max-width:480px; margin: 30px auto 0; padding: 26px 28px; border-radius:16px;
+    background: rgba(255,253,252,0.85); backdrop-filter: blur(8px); border:1px solid var(--line);
+    box-shadow: 0 20px 50px rgba(107,63,75,0.14);
+    text-align:left; font-size:15px; line-height:1.75; color: var(--ink);
+    opacity:0; max-height:0; overflow:hidden; transition: opacity .6s ease, max-height .8s ease, padding .6s ease, margin .6s ease; }
+  .gift-note.show{ opacity:1; max-height:400px; }
+  .gift-note .sig{ display:block; margin-top:14px; font-family:'Fraunces',serif; font-style:italic; color:var(--rose-deep); }
+
+  canvas#confetti{ position:fixed; inset:0; pointer-events:none; z-index:60; }
+
+  /* ---------- VIDEO SECTION ---------- */
+  .video-frame [hidden]{ display:none !important; } /* .video-stage sets display:flex, so plain [hidden] loses */
+  .video-frame{ max-width:720px; margin:0 auto; border-radius:20px; overflow:hidden;
+    box-shadow: 0 24px 60px rgba(107,63,75,0.18); border:1px solid var(--line);
+    background:#000; aspect-ratio: 16/9; position:relative;
+    container-type:size; }
+
+  /* Sizing the wrapper to the frame's height x width means that after the 90deg
+     rotate it lands exactly back on the 16/9 frame, fully filling it with no
+     scale hack. cqw/cqh resolve against .video-frame's own box. */
+  .video-rot{ position:absolute; top:50%; left:50%;
+    width:100cqh; height:100cqw;
+    transform: translate(-50%,-50%) rotate(270deg); }
+  .video-rot video{ display:block; width:100%; height:100%; object-fit:cover; background:#000; }
+
+  /* Custom controls stay unrotated, so every button is upright and tappable. */
+  .video-stage{ position:absolute; inset:0; z-index:2; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; }
+  .video-stage .glyph{ width:70px; height:70px; border-radius:50%;
+    background:rgba(0,0,0,.45); color:#fff; font-size:24px; padding-left:4px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 24px rgba(0,0,0,.32); transition: opacity .25s ease, transform .2s ease; }
+  .video-stage:hover .glyph{ transform:scale(1.07); }
+  .video-frame.playing .video-stage .glyph{ opacity:0; }
+  .video-frame.playing:hover .video-stage .glyph{ opacity:.92; }
+
+  .video-bar{ position:absolute; left:0; right:0; bottom:0; z-index:3;
+    display:flex; align-items:center; gap:10px; padding:14px 12px 10px;
+    color:#fff; font-size:12px; opacity:0; pointer-events:none;
+    background:linear-gradient(0deg, rgba(0,0,0,.68), rgba(0,0,0,0));
+    transition: opacity .25s ease; }
+  .video-frame.paused .video-bar, .video-frame:hover .video-bar{ opacity:1; pointer-events:auto; }
+  /* No hover on phones, so the bar must never fade out or its buttons are unreachable. */
+  @media (hover: none){ .video-bar{ opacity:1; pointer-events:auto; } }
+  .vb-btn{ flex:none; width:30px; height:30px; border:none; border-radius:8px; cursor:pointer;
+    background:rgba(255,255,255,.16); color:#fff; font-size:13px; line-height:1;
+    display:flex; align-items:center; justify-content:center; padding-left:2px; }
+  .vb-btn:hover{ background:rgba(255,255,255,.3); }
+  .vb-time{ flex:none; font-variant-numeric: tabular-nums; opacity:.85; }
+  .vb-seek{ flex:1; min-width:0; -webkit-appearance:none; appearance:none; height:4px; margin:0;
+    border-radius:2px; background:rgba(255,255,255,.35); outline:none; cursor:pointer; }
+  .vb-seek::-webkit-slider-thumb{ -webkit-appearance:none; width:13px; height:13px; border-radius:50%;
+    background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.4); }
+  .vb-seek::-moz-range-thumb{ width:13px; height:13px; border:none; border-radius:50%; background:#fff; }
+
+  .video-placeholder{ aspect-ratio: 16/9; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    background: linear-gradient(135deg, #FDEAE8, #F3C9D2); color: var(--deep); }
+  .video-placeholder .play{ width:56px; height:56px; border-radius:50%; background: rgba(255,255,255,0.7);
+    display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .video-placeholder .vp-label{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; color: rgba(74,46,56,0.6); max-width:280px; text-align:center; }
+  .video-hint{ text-align:center; font-size:12px; color: rgba(74,46,56,0.45); margin:14px 0 0; }
+
+  /* ---------- HIDDEN LOVE NOTE ---------- */
+  .hidden-heart{ position:fixed; bottom:18px; left:18px; z-index:15; font-size:16px;
+    opacity:.16; cursor:pointer; transition: opacity .3s ease, transform .3s ease; filter: grayscale(.3); }
+  .hidden-heart:hover{ opacity:.5; transform: scale(1.15); }
+  .love-overlay{ position:fixed; inset:0; z-index:70; display:flex; align-items:center; justify-content:center;
+    background: rgba(74,46,56,0.35); backdrop-filter: blur(4px);
+    opacity:0; visibility:hidden; transition: opacity .5s ease, visibility .5s ease; padding:24px; }
+  .love-overlay.show{ opacity:1; visibility:visible; }
+  .love-card{ max-width:420px; background: rgba(255,253,252,0.95); border-radius:20px; padding:34px 30px;
+    text-align:center; box-shadow: 0 30px 70px rgba(74,46,56,0.3); position:relative;
+    transform: scale(.9); transition: transform .5s cubic-bezier(.2,.9,.3,1.3); }
+  .love-overlay.show .love-card{ transform: scale(1); }
+  .love-card .eyebrow{ text-transform:uppercase; letter-spacing:.2em; font-size:11px; color:var(--rose-deep); margin-bottom:12px; }
+  .love-card p{ font-size:15px; line-height:1.75; color:var(--ink); margin:0; }
+  .love-card .sig{ display:block; margin-top:16px; font-family:'Fraunces',serif; font-style:italic; color:var(--rose-deep); }
+  .love-close{ margin-top:22px; border:none; background:none; color: rgba(74,46,56,0.5); font-size:12px; cursor:pointer;
+    text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div id="lock">
+  <div class="seal-card">
+    <div class="wax">🔒</div>
+    <div class="eyebrow">A private page</div>
+    <h1>For Lokeshwari, only</h1>
+    <p class="sub">Enter our date to open it — DD&nbsp;MM&nbsp;YY.</p>
+    <div class="code-row" id="codeRow">
+      <input inputmode="numeric" maxlength="1" data-i="0">
+      <input inputmode="numeric" maxlength="1" data-i="1">
+      <input inputmode="numeric" maxlength="1" data-i="2">
+      <input inputmode="numeric" maxlength="1" data-i="3">
+      <input inputmode="numeric" maxlength="1" data-i="4">
+      <input inputmode="numeric" maxlength="1" data-i="5">
+    </div>
+    <div class="hint">6 digits, no spaces</div>
+    <button id="unlockBtn">Unlock</button>
+    <div class="error-msg" id="errMsg"></div>
+  </div>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<div class="hidden-heart" id="hiddenHeart">🤍</div>
+<div class="love-overlay" id="loveOverlay">
+  <div class="love-card">
+    <div class="eyebrow">Something I've been hiding</div>
+    <p id="loveText"></p>
+    <button class="love-close" id="loveClose">close</button>
+  </div>
+</div>
+
+<button class="sound-toggle" id="soundBtn" title="Music off — tap to play" aria-pressed="false">🔈</button>
+<audio id="bgAudio" loop preload="auto"></audio>
+<div class="music-note" id="musicNote" role="status"></div>
+
+<div id="main">
+  <section class="hero">
+    <div class="eyebrow">Happy Birthday</div>
+    <h1>Lokeshwari</h1>
+    <p>One year older, endlessly more loved. Here's a little walk through the years — light the candle when you're ready.</p>
+    <div class="candle-wrap">
+      <div class="candle" id="candle">
+        <div class="flame" id="flame"></div>
+        <div class="stick"></div>
+        <div class="candle-label">tap to blow it out ✨</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">Our Timeline</div>
+      <h2>Year one, to now</h2>
+    </div>
+    <div class="slideshow">
+      <div class="slide-viewport" id="viewport">
+        <div class="arrow left" id="prevBtn">‹</div>
+        <div class="arrow right" id="nextBtn">›</div>
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">A little something</div>
+      <h2>Your gift</h2>
+    </div>
+    <div class="gift-wrap">
+      <div class="gift-box" id="giftBox">
+        <div class="gift-base"></div>
+        <div class="ribbon-v"></div>
+        <div class="gift-lid"></div>
+        <div class="ribbon-h"></div>
+        <div class="bow">🎀</div>
+      </div>
+      <div class="gift-hint" id="giftHint">tap the box to open your gift</div>
+      <div class="gift-note" id="giftNote"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">One more thing</div>
+      <h2>A little video for you</h2>
+    </div>
+    <div class="video-frame" id="videoFrame">
+      <div class="video-placeholder">
+        <div class="play">▶</div>
+        <div class="vp-label">Video coming soon — I'm adding this one myself 💗</div>
+      </div>
+      <div class="video-rot" id="videoRot" hidden>
+        <video id="vid" playsinline preload="metadata"></video>
+      </div>
+      <div class="video-stage" id="videoStage" hidden>
+        <span class="glyph" id="videoGlyph">▶</span>
+      </div>
+      <div class="video-bar" id="videoBar" hidden>
+        <button class="vb-btn" id="videoToggle" title="Play">▶</button>
+        <span class="vb-time" id="videoTime">0:00 / 0:00</span>
+        <input class="vb-seek" id="videoSeek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek">
+        <button class="vb-btn" id="videoMute" title="Mute video">🔊</button>
+        <button class="vb-btn" id="videoFull" title="Fullscreen">⛶</button>
+      </div>
+    </div>
+    <p class="video-hint" id="videoHint">tap the video to play it 💗</p>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">Your turn</div>
+      <h2>What are you expecting?</h2>
+    </div>
+    <div class="wish-box">
+      <textarea id="wishInput" placeholder="Tell me what you're hoping for this year..."></textarea>
+      <br>
+      <button id="wishBtn">Send it my way</button>
+      <div class="reply" id="reply"></div>
+    </div>
+  </section>
+
+  <footer>made with a lot of <span class="heart">♥</span> for your birthday</footer>
+</div>
+
+<script>
+/* ================= CONFIG — edit these ================= */
+const PASSWORD = "300904";
+
+// Song: drop the .mp3 into the "music" folder next to this HTML file, then put
+// its filename here (e.g. "our_song.mp3" -> "music/our_song.mp3").
+// Keep the music/ folder alongside the HTML when you upload or share the page,
+// or the song will not load. Leave as "" to use the built-in soft piano
+// fallback instead.
+const SONG_SRC = "music/24_movie_instrumental.mp3";
+
+// Replace 'img' with a real photo path or a base64 data URI to swap the placeholder.
+const TIMELINE = [
+  { year: "Year One of Us", caption: "Where our love story began — the photo that started it all.", img: "photos/WhatsApp Image 2026-08-27 at 2.05.54 PM.jpeg" },
+  { year: "Year Two", caption: "Falling deeper, one memory at a time.", img: "photos/WhatsApp Image 2026-08-27 at 2.07.19 PM.jpeg" },
+  { year: "Year Three", caption: "Through the ordinary days that became the best ones.", img: "photos/WhatsApp Image 2026-08-27 at 2.07.24 PM.jpeg" },
+  { year: "Year Four", caption: "Every little moment, still worth remembering.", img: "photos/WhatsApp Image 2026-08-27 at 2.07.27 PM.jpeg" },
+  { year: "Now", caption: "And here we are — happy birthday, Lokeshwari.", img: "photos/WhatsApp Image 2026-08-27 at 2.07.28 PM.jpeg" },
+];
+
+// What she sees when she opens the gift box. Edit freely — mention the
+// real gift here (or a hint, or a photo of it via GIFT_IMAGE below).
+const GIFT_MESSAGE = "This year, my gift to you is simple: my time, my patience, and every ordinary day made a little softer because you're in it. (And yes — there's a real gift coming your way too 😉)";
+const GIFT_IMAGE = null; // e.g. "gift.jpg" — shown above the message if set
+
+// The secret message, hidden behind the small heart in the bottom-left
+// corner of the page. Change this to whatever you actually want to say.
+const HIDDEN_LOVE_MESSAGE = "I love you — the kind of love I don't say enough, so I hid it here instead. Happy birthday, Lokeshwari.";
+
+// To add your video: put the video file next to this HTML file, then put
+// its exact filename here (e.g. "message.mp4"). Leave as "" to keep
+// showing the "coming soon" placeholder until you're ready.
+const VIDEO_SRC = "video/WhatsApp Video 2026-08-27 at 5.15.43 PM.mp4";
+/* ========================================================= */
+
+// ---- Glowing bokeh lights ----
+const bokehColors = ['rgba(233,174,187,0.65)','rgba(217,125,109,0.5)','rgba(203,160,106,0.5)','rgba(255,255,255,0.6)'];
+for(let i=0;i<7;i++){
+  const b = document.createElement('div');
+  b.className = 'bokeh';
+  const size = 60 + Math.random()*160;
+  b.style.width = size+'px';
+  b.style.height = size+'px';
+  b.style.left = Math.random()*100 + 'vw';
+  b.style.top = Math.random()*100 + 'vh';
+  b.style.background = `radial-gradient(circle, ${bokehColors[i % bokehColors.length]}, transparent 70%)`;
+  b.style.animationDuration = (7 + Math.random()*8) + 's';
+  document.body.appendChild(b);
+}
+
+// ---- Floating petals & hearts ----
+const petalEmoji = ["🌸","💗","🌷","✨","💫"];
+for(let i=0;i<20;i++){
+  const p = document.createElement('div');
+  p.className = 'petal';
+  p.textContent = petalEmoji[i % petalEmoji.length];
+  p.style.left = Math.random()*100 + 'vw';
+  p.style.animationDuration = (9 + Math.random()*10) + 's';
+  p.style.animationDelay = (Math.random()*10) + 's';
+  p.style.fontSize = (14 + Math.random()*12) + 'px';
+  document.body.appendChild(p);
+}
+
+// ---- Lock screen ----
+const inputs = [...document.querySelectorAll('#codeRow input')];
+inputs.forEach((inp, idx) => {
+  inp.addEventListener('input', () => {
+    inp.value = inp.value.replace(/[^0-9]/g,'').slice(0,1);
+    if(inp.value && idx < inputs.length-1) inputs[idx+1].focus();
+  });
+  inp.addEventListener('keydown', (e) => {
+    if(e.key === 'Backspace' && !inp.value && idx>0) inputs[idx-1].focus();
+    if(e.key === 'Enter') tryUnlock();
+  });
+});
+document.getElementById('unlockBtn').addEventListener('click', tryUnlock);
+
+function tryUnlock(){
+  const code = inputs.map(i=>i.value).join('');
+  const card = document.querySelector('.seal-card');
+  if(code === PASSWORD){
+    document.getElementById('lock').classList.add('unlocked');
+    startMusic();
+    launchConfetti(60);
+    startSlideshowTimer();
+  } else {
+    document.getElementById('errMsg').textContent = "That's not quite the date — try again.";
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+  }
+}
+
+// ---- Candle blow ----
+document.getElementById('candle').addEventListener('click', function(){
+  this.classList.toggle('blown');
+  if(this.classList.contains('blown')) launchConfetti(40);
+});
+
+// ---- Gift box ----
+const giftBox = document.getElementById('giftBox');
+const giftNote = document.getElementById('giftNote');
+const giftHint = document.getElementById('giftHint');
+let giftOpened = false;
+giftBox.addEventListener('click', () => {
+  if(giftOpened) return;
+  giftOpened = true;
+  giftBox.classList.add('open');
+  giftHint.textContent = "for you 💗";
+  giftNote.innerHTML = (GIFT_IMAGE ? `<img src="${GIFT_IMAGE}" style="width:100%;border-radius:10px;margin-bottom:14px;display:block;">` : '')
+    + GIFT_MESSAGE + `<span class="sig">— happy birthday, love</span>`;
+  giftNote.classList.add('show');
+  launchConfetti(70);
+});
+
+// ---- Timeline slideshow ----
+const viewport = document.getElementById('viewport');
+const dotsEl = document.getElementById('dots');
+let current = 0;
+const palette = ["#FDEAE8,#F3C9D2","#FFF3EE,#F1B8C4","#FDEAE8,#EFC9A3","#FFF3EE,#F1B8C4","#FDEAE8,#F3C9D2"];
+
+TIMELINE.forEach((s, i) => {
+  const slide = document.createElement('div');
+  slide.className = 'slide' + (i===0 ? ' active' : '');
+  const [c1,c2] = palette[i % palette.length].split(',');
+  slide.innerHTML = `
+    <div class="slide-photo" style="background:linear-gradient(135deg, ${c1}, ${c2})">
+      ${s.img ? `<img src="${s.img}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">` :
+      `<svg viewBox="0 0 24 24" fill="none" stroke="#6B3F4B" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.2"/><path d="M8 5l1.5-2h5L16 5"/></svg>
+       <div class="ph-label">Add your photo — ${s.year}</div>`}
+    </div>
+    <div class="slide-caption"><span class="year">${s.year}</span><p>${s.caption}</p></div>
+  `;
+  viewport.insertBefore(slide, document.getElementById('prevBtn'));
+
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i===0 ? ' active' : '');
+  dot.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(dot);
+});
+
+function goTo(i){
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.dot');
+  slides[current].classList.remove('active');
+  dots[current].classList.remove('active');
+  current = (i + TIMELINE.length) % TIMELINE.length;
+  slides[current].classList.add('active');
+  dots[current].classList.add('active');
+}
+document.getElementById('nextBtn').addEventListener('click', () => goTo(current+1));
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current-1));
+let autoTimer = null;
+function startSlideshowTimer(){
+  if(autoTimer) clearInterval(autoTimer);
+  autoTimer = setInterval(() => goTo(current+1), 4200);
+}
+function stopSlideshowTimer(){ clearInterval(autoTimer); autoTimer = null; }
+viewport.addEventListener('mouseenter', stopSlideshowTimer);
+viewport.addEventListener('mouseleave', startSlideshowTimer);
+
+// ---- Wish / expectation box ----
+document.getElementById('wishBtn').addEventListener('click', () => {
+  const btn = document.getElementById('wishBtn');
+  const val = document.getElementById('wishInput').value.trim();
+  const reply = document.getElementById('reply');
+  const msg = val
+    ? `Whatever you're expecting, I hope this year gives you even more than that. "${val}" — noted, and I'll do my best to make it happen.`
+    : `Even without saying it, I already know you deserve every bit of good this year can bring.`;
+  reply.innerHTML = msg + `<span class="sig">— wishing you the happiest birthday, Lokeshwari</span>`;
+  reply.classList.add('show');
+  btn.textContent = 'Wishes sent';
+  btn.disabled = true;
+  launchConfetti(50);
+});
+
+// ---- Sound toggle: real song file if provided, else synthesized fallback ----
+let audioCtx, playingSynth = false, musicTimer, usingRealAudio = false;
+let wantMusic = false;   // what the user asked for
+const soundBtn = document.getElementById('soundBtn');
+const audioEl = document.getElementById('bgAudio');
+const musicNote = document.getElementById('musicNote');
+const NOTES = { C4:261.6, D4:293.7, E4:329.6, F4:349.2, G4:392.0, A4:440.0, B4:493.9, C5:523.3 };
+const MELODY = [
+  ['C4',0.5],['C4',0.5],['D4',1],['C4',1],['F4',1],['E4',2],
+  ['C4',0.5],['C4',0.5],['D4',1],['C4',1],['G4',1],['F4',2],
+  ['C4',0.5],['C4',0.5],['C5',1],['A4',1],['F4',1],['E4',1],['D4',2],
+  ['B4',0.5],['B4',0.5],['A4',1],['F4',1],['G4',1],['F4',2],
+];
+function playMelodyOnce(){
+  let t = audioCtx.currentTime;
+  MELODY.forEach(([note,dur]) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = NOTES[note];
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.08, t+0.05);
+    gain.gain.linearRampToValueAtTime(0, t+dur*0.55-0.03);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t+dur*0.55);
+    t += dur*0.55;
+  });
+  return (t - audioCtx.currentTime);
+}
+function loopMelody(){
+  if(!wantMusic){ stopMelody(); paintSoundBtn(); return; }
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  playingSynth = true;
+  const total = playMelodyOnce();
+  musicTimer = setTimeout(loopMelody, total*1000 + 900);
+  paintSoundBtn();
+}
+function stopMelody(){ playingSynth = false; clearTimeout(musicTimer); }
+
+// The icon must never lie about what is actually making noise.
+function paintSoundBtn(){
+  const realOn = usingRealAudio && !audioEl.paused && !audioEl.ended;
+  const on = wantMusic && (realOn || playingSynth);
+  soundBtn.textContent = on ? '\u{1F50A}' : '\u{1F508}';
+  soundBtn.classList.toggle('muted', wantMusic && !on);
+  soundBtn.setAttribute('aria-pressed', String(on));
+  soundBtn.title = on ? 'Music on — tap to stop'
+                     : (wantMusic ? 'Tap to play the song' : 'Play the song');
+}
+function showMusicNote(msg){
+  if(!msg){ musicNote.classList.remove('show'); musicNote.textContent = ''; return; }
+  musicNote.textContent = msg;
+  musicNote.classList.add('show');
+}
+
+// A song that never reached the speakers must not be papered over with a beepy
+// stand-in — say what actually happened, because the fix differs each time.
+function onSongFailed(reason){
+  usingRealAudio = false;
+  if(!wantMusic){ paintSoundBtn(); return; }
+  showMusicNote(/NotAllowed/i.test(reason)
+    ? 'Tap to play the song 🎵'                      // browser blocked it; a tap fixes it
+    : 'Couldn’t load the song — tap to retry');      // bad path; re-check the file
+  paintSoundBtn();
+}
+function onSongPlaying(){
+  // User may have hit the toggle while the file was still loading.
+  if(!wantMusic){ audioEl.pause(); paintSoundBtn(); return; }
+  stopMelody();
+  usingRealAudio = true;
+  showMusicNote(null);
+  paintSoundBtn();
+}
+// Browsers won't start audio until the page has had a real user gesture. The
+// Unlock click is that gesture, so the song has to start on a single play()
+// from inside it — calling load() first resets the element and throws the
+// gesture away, which is exactly what left the song silent.
+function tryPlaySong(){
+  if(!audioEl.getAttribute('src')) return false;
+  const p = audioEl.play();
+  if(p && typeof p.then === 'function') p.then(onSongPlaying).catch(e => onSongFailed(e && e.name || 'error'));
+  else audioEl.addEventListener('playing', onSongPlaying, { once:true });
+  return true;
+}
+function startMusic(){
+  wantMusic = true;
+  paintSoundBtn();
+  // Only fall back to the built-in melody when there is genuinely no song file.
+  if(!tryPlaySong() && !SONG_SRC) loopMelody();
+}
+function stopMusic(){
+  wantMusic = false;
+  audioEl.pause();
+  stopMelody();
+  showMusicNote(null);
+  paintSoundBtn();
+}
+soundBtn.addEventListener('click', () => { wantMusic ? stopMusic() : startMusic(); });
+musicNote.addEventListener('click', () => { wantMusic ? tryPlaySong() : startMusic(); });
+
+// Keep the icon tied to the element's real state so it can't drift out of sync.
+audioEl.addEventListener('play',  paintSoundBtn);
+audioEl.addEventListener('pause', paintSoundBtn);
+audioEl.addEventListener('ended', paintSoundBtn);
+
+// A bad path (file moved, folder not uploaded, wrong case) fires `error`, not
+// a rejected play() — without this the page looks like it is working.
+audioEl.addEventListener('error', () => {
+  usingRealAudio = false;
+  if(audioEl.error) onSongFailed('file not found: ' + audioEl.error.code);
+});
+
+// Wire the song up once, up front, so Unlock only has to call play().
+if(SONG_SRC) audioEl.src = encodeURI(SONG_SRC);
+paintSoundBtn();
+
+// ---- Video section ----
+// Phone videos are portrait, so the media has to be rotated to be watched
+// "horizontally". Rotating the <video> element also rotates the browser's own
+// control bar, which is what made the buttons stop working — so we rotate only
+// the media wrapper and draw the controls ourselves in normal page space.
+const VIDEO_ROTATE = 270; // if the video ends up sideways/upside down, try 90
+if(VIDEO_SRC){
+  const frame  = document.getElementById('videoFrame');
+  const rot    = document.getElementById('videoRot');
+  const stage  = document.getElementById('videoStage');
+  const glyph  = document.getElementById('videoGlyph');
+  const bar    = document.getElementById('videoBar');
+  const toggle = document.getElementById('videoToggle');
+  const timeEl = document.getElementById('videoTime');
+  const seek   = document.getElementById('videoSeek');
+  const mute   = document.getElementById('videoMute');
+  const full   = document.getElementById('videoFull');
+  const hint   = document.getElementById('videoHint');
+  const placeholder = frame.querySelector('.video-placeholder');
+  const vid = document.getElementById('vid');
+
+  if(placeholder) placeholder.remove();
+  [rot, stage, bar].forEach(el => el.hidden = false);
+  vid.src = encodeURI(VIDEO_SRC);
+  frame.classList.add('paused');
+
+  const fmt = s => {
+    if(!isFinite(s) || s < 0) return '0:00';
+    return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+  };
+
+  function paint(){
+    const playing = !vid.paused && !vid.ended;
+    frame.classList.toggle('playing', playing);
+    frame.classList.toggle('paused',  !playing);
+    glyph.textContent = playing ? '❚❚' : '▶';
+    toggle.textContent = playing ? '❚❚' : '▶';
+    toggle.title = playing ? 'Pause' : 'Play';
+    hint.textContent = playing ? 'playing 💗' : 'tap the video to play it 💗';
+  }
+  function paintTime(){
+    const dur = vid.duration;
+    timeEl.textContent = fmt(vid.currentTime) + ' / ' + fmt(dur);
+    const pct = dur ? (vid.currentTime/dur)*100 : 0;
+    seek.style.background = 'linear-gradient(90deg,#fff ' + pct + '%, rgba(255,255,255,.35) ' + pct + '%)';
+  }
+  function paintMute(){
+    mute.textContent = vid.muted ? '🔇' : '🔊';
+    mute.title = vid.muted ? 'Unmute video' : 'Mute video';
+  }
+  // Never swallow this: a rejected play() is the difference between "tap to
+  // play" and a dead black box that looks broken.
+  function togglePlay(){
+    if(!vid.paused){ vid.pause(); return; }
+    vid.play().catch(err => { hint.textContent = 'Couldn’t play — tap to retry (' + err.name + ')'; });
+  }
+  hint.textContent = 'tap the video to play it 💗';
+
+  stage.addEventListener('click', togglePlay);
+  toggle.addEventListener('click', e => { e.stopPropagation(); togglePlay(); });
+  mute.addEventListener('click', e => { e.stopPropagation(); vid.muted = !vid.muted; paintMute(); });
+  full.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = document.fullscreenElement || document.webkitFullscreenElement;
+    if(open){ (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+    else if(frame.requestFullscreen){ frame.requestFullscreen().catch(()=>{}); }
+    else if(vid.webkitEnterFullscreen){ vid.webkitEnterFullscreen(); } // iPhone
+  });
+
+  let seeking = false;
+  seek.addEventListener('pointerdown', () => { seeking = true; });
+  seek.addEventListener('input', () => { if(vid.duration) vid.currentTime = (seek.value/1000) * vid.duration; });
+  ['pointerup','pointercancel','change'].forEach(t => seek.addEventListener(t, () => { seeking = false; }));
+
+  // Only rotate when the video really is portrait — landscape clips are left alone.
+  function applyRotation(){
+    const deg = (vid.videoWidth < vid.videoHeight) ? VIDEO_ROTATE : 0;
+    rot.style.transform = deg ? 'translate(-50%,-50%) rotate(' + deg + 'deg)' : 'none';
+  }
+  vid.addEventListener('loadedmetadata', applyRotation);
+  if(vid.readyState >= 1) applyRotation();
+
+  vid.addEventListener('timeupdate', () => { if(!seeking) seek.value = vid.duration ? (vid.currentTime/vid.duration)*1000 : 0; paintTime(); });
+  vid.addEventListener('play', paint);
+  vid.addEventListener('pause', paint);
+  vid.addEventListener('ended', paint);
+  vid.addEventListener('loadedmetadata', paintTime);
+  vid.addEventListener('volumechange', paintMute);
+  vid.addEventListener('error', () => {
+    frame.style.background = 'linear-gradient(135deg,#FDEAE8,#F3C9D2)';
+    frame.insertAdjacentHTML('beforeend',
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
+      'padding:20px;text-align:center;font-size:12px;color:#6B3F4B">Couldn’t load that video — check the filename in VIDEO_SRC.</div>');
+  });
+  paint(); paintMute();
+
+  // Don't let the song talk over the video.
+  const resumeSong = () => { if(wantMusic && usingRealAudio) audioEl.play().catch(()=>{}); };
+  vid.addEventListener('play',  () => { if(usingRealAudio) audioEl.pause(); });
+  vid.addEventListener('pause', resumeSong);
+  vid.addEventListener('ended', resumeSong);
+}
+
+// ---- Hidden love note ----
+const hiddenHeart = document.getElementById('hiddenHeart');
+const loveOverlay = document.getElementById('loveOverlay');
+const loveText = document.getElementById('loveText');
+hiddenHeart.addEventListener('click', () => {
+  loveText.textContent = HIDDEN_LOVE_MESSAGE;
+  loveOverlay.classList.add('show');
+  launchConfetti(30);
+});
+document.getElementById('loveClose').addEventListener('click', () => loveOverlay.classList.remove('show'));
+loveOverlay.addEventListener('click', (e) => { if(e.target === loveOverlay) loveOverlay.classList.remove('show'); });
+
+// ---- Confetti ----
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+const colors = ['#E9AEBB','#D97D6D','#CBA06A','#FFF3EE'];
+function launchConfetti(n){
+  const pieces = Array.from({length:n}, () => ({
+    x: Math.random()*canvas.width, y: -20, r: 4+Math.random()*4,
+    c: colors[Math.floor(Math.random()*colors.length)],
+    vy: 2+Math.random()*2.5, vx: -1.5+Math.random()*3, rot: Math.random()*360, vr: -6+Math.random()*12
+  }));
+  let frame = 0;
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    frame++;
+    let alive = false;
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      if(p.y < canvas.height+20) alive = true;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);
+      ctx.restore();
+    });
+    if(alive && frame < 260) requestAnimationFrame(tick);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  tick();
+}
+</script>
+</body>
+</html>

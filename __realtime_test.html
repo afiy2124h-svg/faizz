@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>pending</title></head>
+<body>
+<button class="sound-toggle" id="soundBtn" title="Music off" aria-pressed="false">&#128256;</button>
+<audio id="bgAudio" loop preload="metadata"></audio>
+<div class="music-note" id="musicNote" role="status"></div>
+<pre id="out">running</pre>
+<script>
+const SONG_SRC = "music/24_movie_instrumental.mp3";
+const soundBtn = document.getElementById('soundBtn');
+const audioEl  = document.getElementById('bgAudio');
+const musicNote= document.getElementById('musicNote');
+let audioCtx, playingSynth=false, musicTimer, usingRealAudio=false, wantMusic=false;
+function paintSoundBtn(){
+  const on = wantMusic && (usingRealAudio || playingSynth);
+  soundBtn.textContent = on ? '\u{1F50A}' : '\u{1F508}';
+  soundBtn.classList.toggle('muted', wantMusic && !on);
+  soundBtn.setAttribute('aria-pressed', String(on));
+  snap();
+}
+function showMusicNote(m){ if(!m){ musicNote.classList.remove('show'); musicNote.textContent=''; return; } musicNote.textContent=m; musicNote.classList.add('show'); snap(); }
+function snap(){
+  document.getElementById('out').textContent =
+    "wantMusic=" + wantMusic + "\nusingRealAudio=" + usingRealAudio + "\nplayingSynth=" + playingSynth +
+    "\npaused=" + audioEl.paused + "\nreadyState=" + audioEl.readyState +
+    "\ncurrentTime=" + audioEl.currentTime.toFixed(2) + "\nduration=" + audioEl.duration +
+    "\nvolume=" + audioEl.volume + " muted=" + audioEl.muted +
+    "\nbuttonIcon=" + soundBtn.textContent + "\nnote=" + JSON.stringify(musicNote.textContent);
+  document.title = "READY";
+}
+function onSongFailed(reason){ usingRealAudio=false; if(!wantMusic){ paintSoundBtn(); return; }
+  showMusicNote('Couldn\u2019t load the song ('+reason+') \u2014 tap here to retry'); loopMelody(); }
+function onSongPlaying(){ if(!wantMusic){ audioEl.pause(); paintSoundBtn(); return; }
+  stopMelody(); usingRealAudio=true; showMusicNote(null); paintSoundBtn(); }
+function tryPlaySong(){
+  const url = encodeURI(SONG_SRC);
+  if(audioEl.getAttribute('src') !== url){ audioEl.src = url; }
+  const p = audioEl.play();
+  if(p && typeof p.then === 'function') p.then(onSongPlaying).catch(e => onSongFailed(e && e.name || 'error'));
+  return true;
+}
+function startMusic(){ wantMusic=true; paintSoundBtn(); tryPlaySong(); }
+function stopMusic(){ wantMusic=false; audioEl.pause(); stopMelody(); showMusicNote(null); paintSoundBtn(); }
+function loopMelody(){ if(!wantMusic){ stopMelody(); paintSoundBtn(); return; }
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume(); playingSynth=true; paintSoundBtn();
+  musicTimer=setTimeout(loopMelody,5000); }
+function stopMelody(){ playingSynth=false; clearTimeout(musicTimer); }
+soundBtn.addEventListener('click',()=>{ wantMusic ? stopMusic() : startMusic(); });
+musicNote.addEventListener('click',()=>{ if(wantMusic){ stopMelody(); tryPlaySong(); } });
+audioEl.addEventListener('error',()=>{ if(audioEl.networkState===3||audioEl.error) onSongFailed('file not found'); });
+paintSoundBtn();
+startMusic();
+</script>
+</body></html>

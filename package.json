@@ -1,0 +1,10 @@
+{
+  "name": "birthday-wish",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A birthday wish page for Lokeshwari — plain HTML, served locally for development.",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  }
+}
