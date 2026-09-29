@@ -44,7 +44,9 @@ const server = http.createServer((req, res) => {
   } catch {
     return sendError(res, 400, 'Bad request');
   }
-  if (pathname === '/') pathname = '/birth_wish.html';
+  // Serve index.html at the root, the way GitHub Pages and most static hosts
+  // do, so this keeps working if the page is ever renamed.
+  if (pathname === '/' || pathname.endsWith('/')) pathname += 'index.html';
 
   // Resolve inside ROOT only - never let a ../ escape the folder.
   const file = path.resolve(ROOT, '.' + pathname);
